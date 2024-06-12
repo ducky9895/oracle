@@ -49,10 +49,10 @@ class MADDPGklAgent(AbstractAgent):
         return self.full_policy.get_action(np.concatenate(obs, axis=-1)[None])[0]
 
     def target_action(self, obs):
-        return self.local_policy_target.get_action(obs[None])[0]
+        return self.local_policy_target.get_action(obs)
 
     def target_action_full(self, obs):
-        return self.full_policy_target.get_action(np.concatenate(obs, axis=-1)[None])[0]
+        return self.full_policy_target.get_action(np.concatenate(obs, axis=-1))
 
     def preupdate(self):
         pass
@@ -77,7 +77,7 @@ class MADDPGklAgent(AbstractAgent):
         else:
             obs_n, acts_n, rew_n, next_obs_n, done_n = self.replay_buffer.sample(self.batch_size)
             weights = tf.ones(rew_n.shape)
-
+ 
         target_act_next = []
         for a, obs in zip(agents, next_obs_n):
             if a is self:
@@ -213,7 +213,7 @@ class MADDPGklPolicyNetwork(object):
                 p_input = obs_n[self.agent_index]
             
             x = self.forward_pass(p_input)
-            act_n = tf.unstack(act_n)
+            act_n = [a for a in act_n]
             if self.use_gumbel:
                 logits = x  # log probabilities of the gumbel softmax dist are the output of the network
                 act_n[self.agent_index] = self.gumbel_softmax_sample(logits)

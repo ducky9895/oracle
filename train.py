@@ -5,6 +5,7 @@ results from the papers.
 
 import time
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "" # "0"
 from typing import List
 
 import numpy as np
@@ -34,6 +35,7 @@ train_ex = Experiment('train')
 def train_config():
     # Logging
     exp_name = 'default'            # name for logging
+    logdir = 'results/sacred'
 
     display = False                 # render environment
     restore_fp = None               # path to restore models from, e.g.
@@ -41,7 +43,7 @@ def train_config():
     save_rate = 10                  # frequency to save policy as number of episodes
 
     # Environment
-    scenario_name = 'simple_reference' # environment name
+    scenario_name = 'simple_crypto' # environment name
     num_episodes = 60000            # total episodes
     max_episode_len = 25            # timesteps per episodes
 
@@ -108,7 +110,7 @@ def make_env(scenario_name) -> MultiAgentEnv:
 @train_ex.main
 def train(_run, exp_name, save_rate, display, restore_fp,
           hard_max, max_episode_len, num_episodes, batch_size, update_rate,
-          use_target_action):
+          use_target_action, logdir):
     """
     This is the main training function, which includes the setup and training loop.
     It is meant to be called automatically by sacred, but can be used without it as well.
@@ -133,7 +135,7 @@ def train(_run, exp_name, save_rate, display, restore_fp,
     # Create agents
     agents = get_agents(_run, env, env.n_adversaries)
 
-    logger = RLLogger(exp_name, _run, len(agents), env.n_adversaries, save_rate)
+    logger = RLLogger(exp_name, _run, len(agents), env.n_adversaries, save_rate, logdir)
 
     # Load previous results, if necessary
     if restore_fp is not None:
@@ -246,6 +248,7 @@ def get_agents(_run, env, num_adversaries, good_policy, adv_policy, lr, batch_si
                                entropy_coeff=entropy_coeff, policy_update_freq=policy_update_rate,
                                _run=_run
                                )
+            
         elif adv_policy == 'maddpgkl':
             agent = MADDPGklAgent(env.observation_space, env.action_space, agent_idx, batch_size,
                                 buff_size,

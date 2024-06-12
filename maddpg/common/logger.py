@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 
 class RLLogger(object):
-    def __init__(self, exp_name, _run, n_agents, n_adversaries, save_rate):
+    def __init__(self, exp_name, _run, n_agents, n_adversaries, save_rate, logdir):
         '''
         Initializes a logger.
         This logger will take care of results, and debug info, but never the replay buffer.
@@ -21,8 +21,12 @@ class RLLogger(object):
         # while os.path.exists(os.path.join(save_dir, exp_name)):
         #     print('WARNING: EXPERIMENT ALREADY EXISTS. APPENDING TO  TRIAL_NAME.')
         #     exp_name = exp_name + '_i'
+
+        if not os.path.exists(logdir):
+            os.makedirs(logdir)
+
         print(_run._id)
-        self.ex_path = os.path.join('results', 'sacred', str(_run._id))
+        self.ex_path = logdir #str(_run._id)
         os.makedirs(self.ex_path, exist_ok=True)
         self.model_path = os.path.join(self.ex_path, 'models')
         os.makedirs(self.model_path, exist_ok=True)

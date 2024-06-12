@@ -186,6 +186,7 @@ class EfficientReplayBuffer(object):
 
         rew = self._reward[indices]
         done = self._done[indices]
+        
         return obs_n, acts_n, rew, next_obs_n, done
 
 

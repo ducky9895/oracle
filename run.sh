@@ -2,13 +2,13 @@
 
 # Define the scenarios
 scenarios=(
-  "simple_adversary"
-  "simple_crypto"
-  "simple_push"
-  "simple_reference"
-  "simple_speaker_listener"
-  "simple_spread"
-  "simple_tag"
+  # "simple_adversary"
+  # "simple_crypto"
+  # "simple_push"
+  # "simple_reference"
+  # "simple_speaker_listener"
+  # "simple_spread"
+  # "simple_tag"
   "simple_world_comm"
 )
 
@@ -38,7 +38,11 @@ run_experiment() {
   local scenario=$1
   local good_policy=$2
   local adv_policy=$3
-  local exp_name="exp_${scenario}_${good_policy}_vs_${adv_policy}"
+  local exp_name="${good_policy}_vs_${adv_policy}"
+  local scenario_dir="results/1/$scenario"
+  
+  # Create scenario directory if it does not exist
+  mkdir -p $scenario_dir
 
   # Run the experiment using Sacred
   python train.py with exp_name=$exp_name scenario_name=$scenario num_episodes=$num_episodes \
@@ -46,7 +50,8 @@ run_experiment() {
     num_units=$num_units update_rate=$update_rate critic_zero_if_done=$critic_zero_if_done \
     buff_size=$buff_size tau=$tau hard_max=$hard_max priori_replay=$priori_replay alpha=$alpha \
     beta=$beta use_target_action=$use_target_action good_policy=$good_policy adv_policy=$adv_policy \
-    save_rate=100 restore_fp=None
+    save_rate=100 restore_fp=None \
+    logdir=$scenario_dir/$exp_name
 }
 
 # Loop over each scenario and run experiments
@@ -54,8 +59,8 @@ for scenario in "${scenarios[@]}"; do
   echo "Running experiments for scenario: $scenario"
 
   # Run all combinations of good_policy and adv_policy
-  run_experiment $scenario "maddpg" "maddpg"
-  run_experiment $scenario "maddpg" "maddpgkl"
+  # run_experiment $scenario "maddpg" "maddpg"
+  # run_experiment $scenario "maddpg" "maddpgkl"
   run_experiment $scenario "maddpgkl" "maddpg"
   run_experiment $scenario "maddpgkl" "maddpgkl"
 done

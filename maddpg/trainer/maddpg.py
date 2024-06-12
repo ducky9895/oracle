@@ -195,7 +195,8 @@ class MADDPGPolicyNetwork(object):
     def train(self, obs_n, act_n):
         with tf.GradientTape() as tape:
             x = self.forward_pass(obs_n[self.agent_index])
-            act_n = tf.unstack(act_n)
+            act_n = [a for a in act_n]
+            
             if self.use_gumbel:
                 logits = x  # log probabilities of the gumbel softmax dist are the output of the network
                 act_n[self.agent_index] = self.gumbel_softmax_sample(logits)
