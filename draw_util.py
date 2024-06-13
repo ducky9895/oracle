@@ -61,18 +61,15 @@ def plot_metrics(run_dirs, scenario, figures_dir):
         agent_names, num_adversaries = environment_agents.get(scenario_name, ([], 0))
         num_good_agents = len(agent_names) - num_adversaries
         num_agents = num_adversaries + num_good_agents
-        num_episodes = len(rewards) // num_agents
+        num_episodes = len(rewards)
         episodes = list(range(num_episodes))
 
-        for j in range(num_adversaries):
-            agent_rewards = rewards[j::num_agents]
-            agent_name = agent_names[j] if j < len(agent_names) else f'Adversary {j+1}'
-            axs[i].plot(episodes, agent_rewards[:num_episodes], label=f'{agent_name}')
+        #axs[i].plot(episodes, rewards, label='Sum of Rewards')
 
         if agrewards:
-            for j in range(num_good_agents):
+            for j in range(num_agents):
                 agent_agrewards = agrewards[j::num_agents]
-                agent_name = agent_names[num_adversaries + j] if (num_adversaries + j) < len(agent_names) else f'Agent {j+1}'
+                agent_name = agent_names[j] if j < len(agent_names) else f'Agent {j+1}'
                 axs[i].plot(episodes, agent_agrewards[:num_episodes], label=f'{agent_name}')
 
         axs[i].set_title(exp_name)
@@ -91,7 +88,7 @@ def plot_metrics(run_dirs, scenario, figures_dir):
     plt.close()
     print(f"Plot saved for {scenario} as {unique_file_name}")
 
-def plot_all_results(base_dir='results/1', figures_dir='results/figures/1'):
+def plot_all_results(base_dir='results/2', figures_dir='results/figures/2'):
     if not os.path.exists(figures_dir):
         os.makedirs(figures_dir)
 

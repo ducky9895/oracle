@@ -2,13 +2,13 @@
 
 # Define the scenarios
 scenarios=(
-  # "simple_adversary"
-  # "simple_crypto"
-  # "simple_push"
-  # "simple_reference"
-  # "simple_speaker_listener"
-  # "simple_spread"
-  # "simple_tag"
+  "simple_adversary"
+  "simple_crypto"
+  "simple_push"
+  "simple_reference"
+  "simple_speaker_listener"
+  "simple_spread"
+  "simple_tag"
   "simple_world_comm"
 )
 
@@ -59,10 +59,10 @@ for scenario in "${scenarios[@]}"; do
   echo "Running experiments for scenario: $scenario"
 
   # Run all combinations of good_policy and adv_policy
-  # run_experiment $scenario "maddpg" "maddpg"
-  # run_experiment $scenario "maddpg" "maddpgkl"
-  run_experiment $scenario "maddpgkl" "maddpg"
-  run_experiment $scenario "maddpgkl" "maddpgkl"
+  run_experiment $scenario "mad3pg" "mad3pg"
+  run_experiment $scenario "mad3pg" "mad3pgkl"
+  run_experiment $scenario "mad3pgkl" "mad3pg"
+  run_experiment $scenario "mad3pgkl" "mad3pgkl"
 done
 
 echo "All experiments completed."

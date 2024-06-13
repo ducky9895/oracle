@@ -17,7 +17,7 @@ import multiagent.scenarios as scenarios
 from multiagent.environment import MultiAgentEnv
 
 from maddpg.common.logger import RLLogger
-from maddpg.trainer import MADDPGAgent, MATD3Agent, MASACAgent, MAD3PGAgent, MADDPGklAgent
+from maddpg.trainer import MADDPGAgent, MATD3Agent, MASACAgent, MAD3PGAgent, MADDPGklAgent, MATD3klAgent, MASACklAgent, MAD3PGklAgent
 from maddpg.trainer.AbstractAgent import AbstractAgent
 from maddpg.common.util import softmax_to_argmax
 
@@ -50,7 +50,7 @@ def train_config():
     # Agent Parameters
     good_policy = 'maddpg'          # policy of "good" agents in env
     adv_policy = 'maddpg'           # policy of adversary agents in env
-    # available agent: maddpg, matd3, mad3pg, masac
+    # available agent: maddpg, matd3, mad3pg, masac, maddpgkl, matd3kl, masackl, mad3pgkl
 
     # General Training Hyperparameters
     lr = 1e-2                       # learning rate for critics and policies
@@ -248,14 +248,39 @@ def get_agents(_run, env, num_adversaries, good_policy, adv_policy, lr, batch_si
                                entropy_coeff=entropy_coeff, policy_update_freq=policy_update_rate,
                                _run=_run
                                )
-            
         elif adv_policy == 'maddpgkl':
             agent = MADDPGklAgent(env.observation_space, env.action_space, agent_idx, batch_size,
-                                buff_size,
-                                lr, num_layers,
-                                num_units, gamma, tau, priori_replay, alpha=alpha,
-                                max_step=num_episodes * max_episode_len, initial_beta=beta,
-                                _run=_run)
+                                  buff_size,
+                                  lr, num_layers,
+                                  num_units, gamma, tau, priori_replay, alpha=alpha,
+                                  max_step=num_episodes * max_episode_len, initial_beta=beta,
+                                  _run=_run)
+        elif adv_policy == 'matd3kl':
+            agent = MATD3klAgent(env.observation_space, env.action_space, agent_idx, batch_size,
+                                 buff_size,
+                                 lr, num_layers,
+                                 num_units, gamma, tau, priori_replay, alpha=alpha,
+                                 max_step=num_episodes * max_episode_len, initial_beta=beta,
+                                 policy_update_freq=policy_update_rate,
+                                 target_policy_smoothing_eps=critic_action_noise_stddev, _run=_run
+                                 )
+        elif adv_policy == 'mad3pgkl':
+            agent = MAD3PGklAgent(env.observation_space, env.action_space, agent_idx, batch_size,
+                                  buff_size,
+                                  lr, num_layers,
+                                  num_units, gamma, tau, priori_replay, alpha=alpha,
+                                  max_step=num_episodes * max_episode_len, initial_beta=beta,
+                                  num_atoms=num_atoms, min_val=min_val, max_val=max_val,
+                                  _run=_run
+                                  )
+        elif adv_policy == 'masackl':
+            agent = MASACklAgent(env.observation_space, env.action_space, agent_idx, batch_size,
+                                 buff_size,
+                                 lr, num_layers, num_units, gamma, tau, priori_replay, alpha=alpha,
+                                 max_step=num_episodes * max_episode_len, initial_beta=beta,
+                                 entropy_coeff=entropy_coeff, policy_update_freq=policy_update_rate,
+                                 _run=_run
+                                 )
         else:
             raise RuntimeError('Invalid Class')
         agents.append(agent)
@@ -294,11 +319,37 @@ def get_agents(_run, env, num_adversaries, good_policy, adv_policy, lr, batch_si
                                )
         elif good_policy == 'maddpgkl':
             agent = MADDPGklAgent(env.observation_space, env.action_space, agent_idx, batch_size,
-                                buff_size,
-                                lr, num_layers,
-                                num_units, gamma, tau, priori_replay, alpha=alpha,
-                                max_step=num_episodes * max_episode_len, initial_beta=beta,
-                                _run=_run)
+                                  buff_size,
+                                  lr, num_layers,
+                                  num_units, gamma, tau, priori_replay, alpha=alpha,
+                                  max_step=num_episodes * max_episode_len, initial_beta=beta,
+                                  _run=_run)
+        elif good_policy == 'matd3kl':
+            agent = MATD3klAgent(env.observation_space, env.action_space, agent_idx, batch_size,
+                                 buff_size,
+                                 lr, num_layers,
+                                 num_units, gamma, tau, priori_replay, alpha=alpha,
+                                 max_step=num_episodes * max_episode_len, initial_beta=beta,
+                                 policy_update_freq=policy_update_rate,
+                                 target_policy_smoothing_eps=critic_action_noise_stddev, _run=_run
+                                 )
+        elif good_policy == 'mad3pgkl':
+            agent = MAD3PGklAgent(env.observation_space, env.action_space, agent_idx, batch_size,
+                                  buff_size,
+                                  lr, num_layers,
+                                  num_units, gamma, tau, priori_replay, alpha=alpha,
+                                  max_step=num_episodes * max_episode_len, initial_beta=beta,
+                                  num_atoms=num_atoms, min_val=min_val, max_val=max_val,
+                                  _run=_run
+                                  )
+        elif good_policy == 'masackl':
+            agent = MASACklAgent(env.observation_space, env.action_space, agent_idx, batch_size,
+                                 buff_size,
+                                 lr, num_layers, num_units, gamma, tau, priori_replay, alpha=alpha,
+                                 max_step=num_episodes * max_episode_len, initial_beta=beta,
+                                 entropy_coeff=entropy_coeff, policy_update_freq=policy_update_rate,
+                                 _run=_run
+                                 )
         else:
             raise RuntimeError('Invalid Class')
         agents.append(agent)
